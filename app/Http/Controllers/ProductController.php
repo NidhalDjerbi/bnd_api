@@ -23,17 +23,32 @@ class ProductController extends Controller
         return response()->json(['success' => true, 'data' => $product], 201);
     }
 
-    public function update(Request $request, Product $product)
+    public function update(Request $request, $id)
     {
+        $product = Product::find($id);
         $product->update($request->all());
 
         return response()->json(['success' => true, 'data' => $product], 200);
     }
 
-    public function delete(Product $product)
+    public function delete($id)
     {
+        $product = Product::find($id);
         $product->delete();
 
         return response()->json(null, 204);
+    }
+
+
+    public function search(Request $request)
+    {
+        $searchData = [
+            'marque' => $request->input('marque')
+        ];
+        
+        $product = Product::orderBy('created_at', 'desc');
+        if ($searchData['marque'] != null) $product = $product->where('marque', '=', $searchData['marque']);
+    
+        return response()->json(['success' => true, 'data' => $product], 201);
     }
 }
